@@ -4,7 +4,7 @@
 
 **Diagnose and fix AWS Lambda cold start performance issues.**
 
-Static analysis CLI that scans your Lambda project and tells you exactly what's slowing down your cold starts — and how to fix it.
+Static analysis CLI that scans your Node.js Lambda project and tells you exactly what's slowing down your cold starts — and how to fix it.
 
 [![npm](https://img.shields.io/npm/v/lambda-doctor)](https://www.npmjs.com/package/lambda-doctor)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
