@@ -2,14 +2,18 @@ import { Command } from 'commander';
 import ora from 'ora';
 import fs from 'fs/promises';
 import path from 'path';
+import { fileURLToPath } from 'url';
 import { analyze, printReport } from '../index.js';
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const pkg = JSON.parse(await fs.readFile(path.join(__dirname, '..', 'package.json'), 'utf-8'));
 
 const program = new Command();
 
 program
   .name('lambda-doctor')
   .description('Diagnose and fix AWS Lambda cold start performance issues')
-  .version('0.1.0');
+  .version(pkg.version);
 
 program
   .command('analyze')
