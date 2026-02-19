@@ -1,0 +1,67 @@
+{
+  "name": "lambda-doctor",
+  "version": "0.1.0",
+  "description": "Diagnose and fix AWS Lambda cold start performance issues. Static analysis CLI tool.",
+  "author": "Ozer Subasi (https://github.com/ozers)",
+  "license": "MIT",
+  "type": "module",
+  "bin": {
+    "lambda-doctor": "./dist/cli.js"
+  },
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "lint": "tsc --noEmit",
+    "prepublishOnly": "npm run build"
+  },
+  "dependencies": {
+    "chalk": "^5.3.0",
+    "commander": "^12.1.0",
+    "fast-glob": "^3.3.2",
+    "ora": "^8.1.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "tsup": "^8.3.0",
+    "typescript": "^5.6.0",
+    "vitest": "^2.1.0"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "keywords": [
+    "aws",
+    "lambda",
+    "cold-start",
+    "performance",
+    "optimization",
+    "serverless",
+    "bundle-size",
+    "cli",
+    "analyzer",
+    "diagnostics"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ozers/lambda-doctor.git"
+  },
+  "bugs": {
+    "url": "https://github.com/ozers/lambda-doctor/issues"
+  },
+  "homepage": "https://github.com/ozers/lambda-doctor#readme"
+}
