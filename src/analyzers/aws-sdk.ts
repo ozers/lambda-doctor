@@ -2,12 +2,13 @@ import fs from 'fs/promises';
 import fg from 'fast-glob';
 import path from 'path';
 import type { Analyzer, AnalyzerResult, Diagnostic } from '../../types.js';
+import { DEFAULT_EXCLUDE_PATTERNS } from '../../types.js';
 
 export const awsSdkAnalyzer: Analyzer = {
   name: 'aws-sdk',
   description: 'Checks AWS SDK version usage and migration status',
 
-  async analyze(targetPath: string): Promise<AnalyzerResult> {
+  async analyze(targetPath: string, exclude?: string[]): Promise<AnalyzerResult> {
     const start = performance.now();
     const diagnostics: Diagnostic[] = [];
 
@@ -58,7 +59,7 @@ export const awsSdkAnalyzer: Analyzer = {
       // Check source files for unnecessary SSO client
       const sourceFiles = await fg(['**/*.ts', '**/*.js', '**/*.mjs'], {
         cwd: targetPath,
-        ignore: ['node_modules/**', 'dist/**', '**/*.d.ts'],
+        ignore: exclude ?? DEFAULT_EXCLUDE_PATTERNS,
         absolute: false,
       });
 

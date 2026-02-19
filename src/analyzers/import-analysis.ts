@@ -2,6 +2,7 @@ import fg from 'fast-glob';
 import fs from 'fs/promises';
 import path from 'path';
 import type { Analyzer, AnalyzerResult, Diagnostic } from '../../types.js';
+import { DEFAULT_EXCLUDE_PATTERNS } from '../../types.js';
 import { isHeavyPackage, findHeavyPackage } from '../../known-heavy-packages.js';
 
 const ESM_IMPORT = /^import\s+.*\s+from\s+['"](.+)['"]/gm;
@@ -26,14 +27,14 @@ export const importAnalysisAnalyzer: Analyzer = {
   name: 'import-analysis',
   description: 'Analyzes import patterns for tree-shaking issues and heavy top-level imports',
 
-  async analyze(targetPath: string): Promise<AnalyzerResult> {
+  async analyze(targetPath: string, exclude?: string[]): Promise<AnalyzerResult> {
     const start = performance.now();
     const diagnostics: Diagnostic[] = [];
 
     try {
       const files = await fg(['**/*.ts', '**/*.js', '**/*.mjs'], {
         cwd: targetPath,
-        ignore: ['node_modules/**', 'dist/**', '**/*.d.ts'],
+        ignore: exclude ?? DEFAULT_EXCLUDE_PATTERNS,
         absolute: false,
       });
 

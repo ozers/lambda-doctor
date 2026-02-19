@@ -99,7 +99,26 @@ export interface AnalyzeConfig {
   format?: 'console' | 'json';
   /** Whether to show verbose output */
   verbose?: boolean;
+  /** Glob patterns to exclude from file scanning */
+  exclude?: string[];
 }
+
+/** Default glob patterns excluded from scanning */
+export const DEFAULT_EXCLUDE_PATTERNS: string[] = [
+  'node_modules/**',
+  'dist/**',
+  'build/**',
+  'coverage/**',
+  '**/*.d.ts',
+  '**/__tests__/**',
+  '**/*.test.*',
+  '**/*.spec.*',
+  '**/test/**',
+  '**/tests/**',
+  '**/cypress/**',
+  '**/.serverless/**',
+  '**/cdk.out/**',
+];
 
 /** Interface that all analyzers must implement */
 export interface Analyzer {
@@ -108,5 +127,5 @@ export interface Analyzer {
   /** Human-readable description */
   description: string;
   /** Run the analysis */
-  analyze(targetPath: string): Promise<AnalyzerResult>;
+  analyze(targetPath: string, exclude?: string[]): Promise<AnalyzerResult>;
 }

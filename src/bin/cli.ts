@@ -17,7 +17,9 @@ program
   .argument('<path>', 'Path to the Lambda project directory')
   .option('--format <format>', 'Output format: console or json', 'console')
   .option('--verbose', 'Show verbose output', false)
-  .action(async (targetPath: string, options: { format: string; verbose: boolean }) => {
+  .option('--exclude <patterns>', 'Comma-separated glob patterns to exclude (default: tests, dist, build, cypress, coverage)')
+  .option('--no-default-excludes', 'Disable default exclude patterns (tests, cypress, etc.)')
+  .action(async (targetPath: string, options: { format: string; verbose: boolean; exclude?: string; defaultExcludes: boolean }) => {
     const resolvedPath = path.resolve(targetPath);
 
     // Validate path exists
@@ -36,6 +38,17 @@ program
       process.exit(1);
     }
 
+    // Build exclude patterns
+    let excludePatterns: string[] | undefined;
+    if (!options.defaultExcludes) {
+      // Only basic excludes when --no-default-excludes is used
+      excludePatterns = ['node_modules/**', 'dist/**', '**/*.d.ts'];
+    }
+    if (options.exclude) {
+      const userPatterns = options.exclude.split(',').map((p) => p.trim());
+      excludePatterns = [...(excludePatterns ?? []), ...userPatterns];
+    }
+
     const spinner = ora('Analyzing Lambda project...').start();
 
     try {
@@ -43,6 +56,7 @@ program
         targetPath: resolvedPath,
         format: options.format as 'console' | 'json',
         verbose: options.verbose,
+        exclude: excludePatterns,
       });
 
       spinner.stop();
