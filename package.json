@@ -1,6 +1,6 @@
 {
   "name": "lambda-doctor",
-  "version": "0.1.2",
+  "version": "0.1.4",
   "description": "Diagnose and fix AWS Lambda cold start performance issues. Static analysis CLI tool.",
   "author": "Ozer Subasi (https://github.com/ozers)",
   "license": "MIT",

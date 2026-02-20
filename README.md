@@ -55,6 +55,8 @@ We tested Lambda Doctor against popular open-source serverless projects:
 | [anomalyco/demo-notes-app](https://github.com/anomalyco/demo-notes-app) (SST Guide) | 195 | 1 | 2 | ~542ms |
 | [adamjq/production-ready-serverless-nestjs](https://github.com/adamjq/production-ready-serverless-nestjs) | 40 | 0 | 5 | ~350ms |
 
+> **Note:** For large monorepos with frontend/IaC code alongside Lambda functions, use `--exclude` to scope the analysis to your backend packages: `lambda-doctor analyze . --exclude "packages/app-*/**,packages/frontend/**"`
+
 ### Example: NestJS Lambda API
 
 Running against [adamjq/production-ready-serverless-nestjs](https://github.com/adamjq/production-ready-serverless-nestjs) — a production-ready NestJS GraphQL API on AWS Lambda with Prisma and Webpack:
