@@ -105,19 +105,29 @@ export interface AnalyzeConfig {
 
 /** Default glob patterns excluded from scanning */
 export const DEFAULT_EXCLUDE_PATTERNS: string[] = [
+  // Build artifacts
   'node_modules/**',
   'dist/**',
   'build/**',
   'coverage/**',
   '**/*.d.ts',
+  // Test files
   '**/__tests__/**',
   '**/*.test.*',
   '**/*.spec.*',
   '**/test/**',
   '**/tests/**',
+  '**/testing/**',
   '**/cypress/**',
+  // Serverless/IaC artifacts
   '**/.serverless/**',
   '**/cdk.out/**',
+  // IaC directories (not Lambda runtime code)
+  '**/pulumi/**',
+  '**/cdk/**',
+  '**/terraform/**',
+  // Scripts & tooling (not Lambda runtime code)
+  '**/scripts/**',
 ];
 
 /** Interface that all analyzers must implement */

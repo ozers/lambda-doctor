@@ -9,6 +9,35 @@ const ESM_IMPORT = /^import\s+.*\s+from\s+['"](.+)['"]/gm;
 const CJS_REQUIRE = /^(?:const|let|var)\s+.*=\s*require\(['"](.+)['"]\)/gm;
 const WILDCARD_IMPORT = /^import\s+\*\s+as\s+\w+\s+from\s+['"](.+)['"]/gm;
 
+// Packages where wildcard import is standard practice or has no cold start impact
+const WILDCARD_ALLOWLIST = new Set([
+  // Node builtins
+  'path', 'fs', 'fs/promises', 'os', 'url', 'util', 'crypto', 'stream', 'http', 'https',
+  'child_process', 'events', 'buffer', 'querystring', 'zlib', 'net', 'tls',
+  'dns', 'dgram', 'cluster', 'readline', 'assert', 'timers', 'perf_hooks',
+  'worker_threads', 'async_hooks', 'tty',
+  // Node builtins with node: protocol
+  'node:path', 'node:fs', 'node:fs/promises', 'node:os', 'node:url', 'node:util',
+  'node:crypto', 'node:http', 'node:https', 'node:stream', 'node:events',
+  'node:buffer', 'node:querystring', 'node:child_process', 'node:cluster',
+  'node:net', 'node:readline', 'node:zlib', 'node:assert', 'node:tty',
+  // Frontend frameworks (shouldn't be in Lambda, but don't false-positive)
+  'react', 'react-dom', 'vue', 'svelte', 'preact',
+  // IaC SDKs (deploy-time, not Lambda runtime)
+  '@pulumi/aws', '@pulumi/pulumi', '@pulumi/cloud', '@pulumi/random', '@pulumi/awsx',
+  // AWS CDK
+  'aws-cdk-lib', '@aws-cdk/core', 'constructs',
+]);
+
+function isWildcardAllowed(pkg: string): boolean {
+  if (WILDCARD_ALLOWLIST.has(pkg)) return true;
+  // Allow all node: protocol imports
+  if (pkg.startsWith('node:')) return true;
+  // Allow @pulumi/* and @aws-cdk/* scoped packages
+  if (pkg.startsWith('@pulumi/') || pkg.startsWith('@aws-cdk/')) return true;
+  return false;
+}
+
 function getPackageName(specifier: string): string | null {
   if (specifier.startsWith('.') || specifier.startsWith('/')) return null;
   const parts = specifier.split('/');
@@ -51,7 +80,7 @@ export const importAnalysisAnalyzer: Analyzer = {
           WILDCARD_IMPORT.lastIndex = 0;
           while ((match = WILDCARD_IMPORT.exec(line)) !== null) {
             const pkg = getPackageName(match[1]);
-            if (pkg) {
+            if (pkg && !isWildcardAllowed(pkg) && !WILDCARD_ALLOWLIST.has(match[1])) {
               diagnostics.push({
                 analyzer: 'import-analysis',
                 severity: 'warning',

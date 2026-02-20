@@ -50,7 +50,7 @@ We tested Lambda Doctor against popular open-source serverless projects:
 
 | Project | ⭐ Stars | Critical | Warnings | Est. Improvement |
 |---|---|---|---|---|
-| [webiny/webiny-js](https://github.com/webiny/webiny-js) | 7.9k | 1 | 225 | **~4.7s** |
+| [webiny/webiny-js](https://github.com/webiny/webiny-js) | 7.9k | 1 | 132 | **~2.7s** |
 | [aws-powertools/powertools-lambda-typescript](https://github.com/aws-powertools/powertools-lambda-typescript) | 1.8k | 1 | 3 | ~920ms |
 | [anomalyco/demo-notes-app](https://github.com/anomalyco/demo-notes-app) (SST Guide) | 195 | 1 | 2 | ~542ms |
 | [adamjq/production-ready-serverless-nestjs](https://github.com/adamjq/production-ready-serverless-nestjs) | 40 | 0 | 5 | ~350ms |

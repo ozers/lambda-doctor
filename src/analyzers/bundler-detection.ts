@@ -3,15 +3,27 @@ import fg from 'fast-glob';
 import path from 'path';
 import type { Analyzer, AnalyzerResult, Diagnostic } from '../../types.js';
 
-const BUNDLER_PACKAGES = ['esbuild', 'webpack', 'rollup', 'tsup', 'parcel'];
+const BUNDLER_PACKAGES = [
+  'esbuild', 'webpack', 'rollup', 'tsup', 'parcel',
+  '@rsbuild/core', 'rspack', '@rspack/core',
+  'turbopack', 'swc', '@swc/core', 'bun',
+  'vite',
+];
 const BUNDLER_CONFIGS = [
   'webpack.config.*',
   'rollup.config.*',
   'tsup.config.*',
   'esbuild.config.*',
   '.parcelrc',
+  'rsbuild.config.*',
+  'rspack.config.*',
+  'vite.config.*',
+  '.swcrc',
 ];
-const BUNDLER_KEYWORDS = ['esbuild', 'webpack', 'rollup', 'tsup', 'parcel', 'bundle'];
+const BUNDLER_KEYWORDS = [
+  'esbuild', 'webpack', 'rollup', 'tsup', 'parcel', 'bundle',
+  'rsbuild', 'rspack', 'turbopack', 'swc', 'vite',
+];
 
 export const bundlerDetectionAnalyzer: Analyzer = {
   name: 'bundler-detection',
