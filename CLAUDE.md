@@ -1,67 +1,67 @@
 # Lambda Doctor — Implementation Guide
 
-Bu projenin scaffold'u hazır. Aşağıdaki sırayla implement et.
+Project scaffold is ready. Implement in the following order.
 
 ## Implementation Order
 
 ### 1. `src/analyzers/bundle-size.ts`
-- `fast-glob` ile `node_modules/` altındaki tüm dosyaları tara
-- @scoped paketleri doğru grupla (`@aws-sdk/client-dynamodb` → `@aws-sdk/client-dynamodb`)
-- `fs.stat` ile dosya boyutlarını topla
-- Top 10 en büyük dependency'yi raporla
+- Scan all files under `node_modules/` using `fast-glob`
+- Group scoped packages correctly (`@aws-sdk/client-dynamodb` → `@aws-sdk/client-dynamodb`)
+- Collect file sizes via `fs.stat`
+- Report top 10 largest dependencies
 - Thresholds: >50MB critical, >10MB warning, single dep >5MB critical, >1MB warning
 
 ### 2. `src/analyzers/heavy-dependencies.ts`
-- `package.json` oku, `dependencies` ve `devDependencies` ayrıştır
-- Her dependency'yi `known-heavy-packages.ts` ile karşılaştır
-- typescript, ts-node gibi dev tool'ların `dependencies`'de olmasını critical olarak flag'le
-- Match olan her paket için alternative ve estimatedSavingsMs değerlerini diagnostic'e ekle
+- Read `package.json`, split `dependencies` and `devDependencies`
+- Check each dependency against `known-heavy-packages.ts`
+- Flag dev tools (typescript, ts-node) in `dependencies` as critical
+- Add alternative and estimatedSavingsMs to each diagnostic
 
 ### 3. `src/analyzers/import-analysis.ts`
-- `fast-glob` ile `.ts`, `.js`, `.mjs` dosyalarını bul (node_modules hariç)
-- Regex ile import/require pattern'lerini çıkar:
+- Find `.ts`, `.js`, `.mjs` files using `fast-glob` (excluding node_modules)
+- Extract import/require patterns with regex:
   - ESM: `/^import\s+.*\s+from\s+['"](.+)['"]/gm`
   - CJS: `/^(?:const|let|var)\s+.*=\s*require\(['"](.+)['"]\)/gm`
-- Top-level vs function-body tespiti: satır indentation'ı 0-1 ise top-level
-- Heavy paket top-level import'ını flag'le
-- `import * as` pattern'ini flag'le (tree-shaking engelliyor)
+- Top-level vs function-body detection: line indentation 0-1 = top-level
+- Flag top-level imports of heavy packages
+- Flag `import * as` patterns (blocks tree-shaking)
 
 ### 4. `src/analyzers/aws-sdk.ts`
-- package.json'da `aws-sdk` (v2) varsa → critical
-- `@aws-sdk/client-*` varsa → good, count et
-- İkisi birden varsa → warning (incomplete migration)
-- 5'ten fazla @aws-sdk client → info (çok fazla client)
-- Source'da `@aws-sdk/client-sso` import'u → warning (Lambda'da gereksiz)
+- `aws-sdk` (v2) in package.json → critical
+- `@aws-sdk/client-*` present → good, count them
+- Both v2 and v3 → warning (incomplete migration)
+- More than 5 @aws-sdk clients → info (too many clients)
+- `@aws-sdk/client-sso` import in source → warning (unnecessary in Lambda)
 
 ### 5. `src/analyzers/bundler-detection.ts`
-- package.json devDependencies'de bundler var mı: esbuild, webpack, rollup, tsup, parcel
-- Config dosyaları var mı: webpack.config.*, rollup.config.*, tsup.config.*, esbuild.config.*
-- package.json scripts'te bundler keyword'leri var mı
-- serverless.yml'de serverless-esbuild veya serverless-webpack var mı
-- `"type": "module"` set mi (ESM check)
-- Hiç bundler yoksa → critical (en büyük iyileştirme fırsatı)
+- Check devDependencies for bundlers: esbuild, webpack, rollup, tsup, parcel
+- Check for config files: webpack.config.*, rollup.config.*, tsup.config.*, esbuild.config.*
+- Check package.json scripts for bundler keywords
+- Check serverless.yml for serverless-esbuild or serverless-webpack
+- Check for `"type": "module"` (ESM)
+- No bundler found → critical (biggest optimization opportunity)
 
 ### 6. `src/reporters/console.ts`
-- chalk ile renkli output
+- Colored output with chalk
 - Severity icon mapping: critical=🔴, warning=⚠️, info=💡
-- Bundle size breakdown (top dependencies tablosu)
-- Diagnostics severity'ye göre sıralı
-- Footer'da toplam estimated improvement
+- Bundle size breakdown (top dependencies table)
+- Diagnostics sorted by severity
+- Footer with total estimated improvement
 
 ### 7. `src/bin/cli.ts`
-- ora spinner göster analiz sırasında
-- Error handling: path yoksa, package.json yoksa anlamlı hata mesajı
-- JSON output formatı desteği
-- Critical issue varsa exit code 1
+- Show ora spinner during analysis
+- Error handling: meaningful messages for missing path or package.json
+- JSON output format support
+- Exit code 1 if critical issues found
 
 ## Quality Standards
 
-- Her analyzer kendi AnalyzerResult'unu döner
-- Tüm file I/O async olmalı (fs/promises)
-- Her diagnostic'te mutlaka: title, description, recommendation, estimatedImpactMs
-- Hiçbir analyzer crash etmemeli — hata durumunda boş result dön, console'a warning bas
-- Test fixtures'daki unhealthy-lambda'da en az 8 issue bulunmalı
-- Test fixtures'daki healthy-lambda'da 0 critical issue bulunmalı
+- Each analyzer returns its own AnalyzerResult
+- All file I/O must be async (fs/promises)
+- Every diagnostic must have: title, description, recommendation, estimatedImpactMs
+- No analyzer should crash — return empty result on error, log warning to console
+- Test fixtures: unhealthy-lambda must have at least 8 issues
+- Test fixtures: healthy-lambda must have 0 critical issues
 
 ## Run & Verify
 
