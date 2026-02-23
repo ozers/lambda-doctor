@@ -6,6 +6,7 @@
 
 Static analysis CLI that scans your Node.js Lambda project and tells you exactly what's slowing down your cold starts — and how to fix it.
 
+[![CI](https://github.com/ozers/lambda-doctor/actions/workflows/ci.yml/badge.svg)](https://github.com/ozers/lambda-doctor/actions/workflows/ci.yml)
 [![npm](https://img.shields.io/npm/v/lambda-doctor)](https://www.npmjs.com/package/lambda-doctor)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![TypeScript](https://img.shields.io/badge/TypeScript-strict-blue.svg)](https://www.typescriptlang.org/)
