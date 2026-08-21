@@ -66,3 +66,4 @@ node_modules/
 
 # Build output
 dist/
+.DS_Store
